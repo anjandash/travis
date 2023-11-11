@@ -13,6 +13,8 @@ const AudioRecorder = () => {
     const [startDestData, setStartDestData] = useState(null);
     const [endDestData, setEndDestData] = useState(null);
 
+    const [estimateData, setEstimateData] = useState(null);
+
     function extractInformation(inputString) {
         // Regular expressions for extracting the required information
         const startDestPattern = /Start destination,?\s*(.*?)\s*End destination/i;
@@ -33,11 +35,20 @@ const AudioRecorder = () => {
     }
 
     const handleStringNumberOfPeople = (numberOfPeople) => {
+        console.log("====================================")
+        console.log("Number of people is a string", numberOfPeople);
+
         // convert the string to lowercase
         numberOfPeople = numberOfPeople.toLowerCase();
 
         // strip the string of extra spaces
         numberOfPeople = numberOfPeople.trim();
+
+        // remove any commas or full stops
+        numberOfPeople = numberOfPeople.replace(/,/g, "");
+        numberOfPeople = numberOfPeople.replace(/\./g, "");
+
+
 
         // check if the string contains a number
         if (/\d/.test(numberOfPeople)) {
@@ -88,7 +99,7 @@ const AudioRecorder = () => {
                 
                 setStartDest(startDest);
                 setEndDest(endDest);
-                setNumberOfPeople(numberOfPeople);
+                setNumberOfPeople(numberOfPeopleInt);
             }
         }
     }, [newTranscription]);
@@ -140,6 +151,114 @@ const AudioRecorder = () => {
             });
         }
     }, [endDest]);
+
+
+    // useEffect(() => {
+    //     if (isArray(startDestData) && isArray(endDestData) && startDestData.length > 0 && endDestData.length > 0) {
+    //         console.log("====================================")
+    //         console.log("Start and end destination data is set", startDestData, endDestData);
+    //         console.log("====================================")
+
+
+    //         if (isArray(startDestData) && isArray(endDestData) && startDestData.length > 0 && endDestData.length > 0) {
+
+    //             const startDestDataString = startDestData[0].google_place_id;
+    //             const endDestDataString = endDestData[0].google_place_id;
+
+    //             console.log("====================================")
+    //             console.log("Start and end destination data is set", startDestDataString, endDestDataString);
+    //             console.log("====================================")
+    //             console.log(typeof startDestDataString, typeof endDestDataString)
+    //             console.log("====================================")
+
+
+    //             fetch('https://dev.api.mooovex.com/hackathon/routedetails', {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify({
+    //                     "origin_google_place_id": startDestDataString,
+    //                     "destination_google_place_id": endDestDataString,
+    //                     "passenger_count": numberOfPeople,
+    //                     "when": "now",
+    //                     "language": "en"
+    //                 })
+    //             })
+    //             .then(response => response.json())
+    //             .then(estimateData => {
+    //                 // Update state with the response data for end destination
+    //                 console.log("FIN ------", estimateData);
+    //                 setEstimateData(estimateData);
+    //             })
+    //             .catch(error => {
+    //                 console.error('Error:', error);
+    //             });
+    //         } else {
+    //             console.log("Start or end destination not set or is null", startDestData, endDestData);
+    //         }
+
+    //     }
+    // }, [startDestData, endDestData]);
+
+
+    useEffect(() => {
+        if (startDestData && endDestData) {
+            console.log("====================================")
+            console.log("Start and end destination data is set", startDestData, endDestData);
+            console.log("====================================")
+
+            let startDestDataString = null;
+            let endDestDataString = null;
+
+            if (startDestData.length > 0) {
+                startDestDataString = startDestData[0].google_place_id;
+            } 
+            // else {
+            //     alert("Multiple start destinations could be recognized");
+            //     return;
+            // }
+
+
+            if (endDestData.length > 0) {
+                endDestDataString = endDestData[0].google_place_id;
+            } 
+            // else {
+            //     alert("Multiple end destinations could be recognized");
+            //     return;
+            // }
+
+            console.log("====================================")
+            console.log("Start and end destination data is set", startDestDataString, endDestDataString);
+            console.log("====================================")
+
+            fetch('https://dev.api.mooovex.com/hackathon/routedetails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "origin_google_place_id": startDestDataString,
+                    "destination_google_place_id": endDestDataString,
+                    "passenger_count": numberOfPeople,
+                    "when": "now",
+                    "language": "en"
+                })
+            })
+            .then(response => response.json())
+            .then(estimateData => {
+                // Update state with the response data for end destination
+                console.log("FIN ------", estimateData);
+                setEstimateData(estimateData);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+
+
+        }
+    }, [startDestData, endDestData]);
 
 
 
@@ -218,7 +337,9 @@ const AudioRecorder = () => {
         flexDirection: 'column',
         alignItems: 'center',
     }}>
+        <br />
       <button onClick={startRecording} style={{ backgroundColor: "whitesmoke", border: "1px solid grey" }}>Start Recording</button>
+        <br />
       <button onClick={stopRecording} style={{ backgroundColor: "whitesmoke", border: "1px solid grey" }}>Stop Recording</button>
 
       <hr />
@@ -247,13 +368,32 @@ const AudioRecorder = () => {
             alignItems: 'center',
             border: "1px solid red",
             borderRadius: "5px",
+            minWidth: "600px",            
         }}>
             <h2>New Transcription has been found! </h2>
-            <p>Recognized Start Destination field: {startDest} {startDestData.google_place_id}</p>
-            <p>Recognized End Destination field: {endDest} {endDestData.google_place_id}</p>
+            <p>Recognized Start Destination field: {startDest} </p>
+            <p>Recognized End Destination field: {endDest} </p>
             <p>Recognized Number of People field: {numberOfPeople}</p>
         </div>
       )}
+
+        <hr />
+      {estimateData && (
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            border: "1px solid gold",
+            borderRadius: "5px",
+            minWidth: "600px",
+        }}>
+            <h2>Estimate Data</h2>
+            <p>Estimated distance: {estimateData.distanceMeters || "--"} metres</p>
+            <p>Estimated duration: {estimateData.durationSeconds || "--"} seconds</p>
+            <p>Estimated price: {estimateData.price || "--"} Euros</p>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -30,11 +30,11 @@ function App() {
         <h2>Mooovex TRAVIS</h2>
         <hr />
 
-        <div className="PostsWrapper" style={{
+        {/* <div className="PostsWrapper" style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          height: '300px',
+          height: '50px',
           overflow: 'scroll',
         }}>
           {data.map((post) => (
@@ -45,7 +45,7 @@ function App() {
         </div>
 
 
-        <hr />
+        <hr /> */}
 
         <AudioRecorder />
       </div>
