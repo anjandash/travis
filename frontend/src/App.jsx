@@ -29,6 +29,7 @@ function App() {
       <div className="MainWrapper">
         <h2>Mooovex TRAVIS</h2>
         <hr />
+
         <div className="PostsWrapper" style={{
           display: 'flex',
           flexDirection: 'column',
@@ -42,7 +43,10 @@ function App() {
             </div>
           ))}
         </div>
+
+
         <hr />
+
         <AudioRecorder />
       </div>
     </>
