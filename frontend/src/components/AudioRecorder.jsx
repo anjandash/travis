@@ -48,8 +48,6 @@ const AudioRecorder = () => {
         numberOfPeople = numberOfPeople.replace(/,/g, "");
         numberOfPeople = numberOfPeople.replace(/\./g, "");
 
-
-
         // check if the string contains a number
         if (/\d/.test(numberOfPeople)) {
             // if it contains a number, return the number
@@ -338,9 +336,25 @@ const AudioRecorder = () => {
         alignItems: 'center',
     }}>
         <br />
-      <button onClick={startRecording} style={{ backgroundColor: "whitesmoke", border: "1px solid grey" }}>Start Recording</button>
+      <button onClick={startRecording} style={{ 
+        backgroundColor: "green", 
+        border: "0px solid whitesmoke", 
+        height: "100px", 
+        color: "whitesmoke",
+        boxShadow: "2px 2px 8px -4px rgba(0,0,0,0.5)", 
+        }}>
+            Start Recording
+      </button>
         <br />
-      <button onClick={stopRecording} style={{ backgroundColor: "whitesmoke", border: "1px solid grey" }}>Stop Recording</button>
+      <button onClick={stopRecording} style={{ 
+        backgroundColor: "orangered", 
+        border: "0px solid whitesmoke", 
+        height: "100px", 
+        color: "whitesmoke",
+        boxShadow: "2px 2px 8px -4px orangered",
+        }}>
+            Stop Recording
+        </button>
 
       <hr />
       {audioData && (
@@ -378,7 +392,9 @@ const AudioRecorder = () => {
       )}
 
         <hr />
-      {estimateData && (
+
+
+      {/* {estimateData && (
         <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -392,7 +408,28 @@ const AudioRecorder = () => {
             <p>Estimated duration: {estimateData.durationSeconds || "--"} seconds</p>
             <p>Estimated price: {estimateData.price || "--"} Euros</p>
         </div>
-      )}
+      )} */}
+
+        {estimateData && (
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                border: "1px solid gold",
+                borderRadius: "5px",
+                minWidth: "600px",
+            }}>
+                <h2>Estimate Data</h2>
+                <p>Estimated distance: {estimateData.distanceMeters ? (estimateData.distanceMeters / 1000).toFixed(2) : "--"} kilometers</p>
+                <p>Estimated duration: {
+                    estimateData.durationSeconds ? 
+                    `${Math.floor(estimateData.durationSeconds / 3600)} hours and ${(estimateData.durationSeconds % 3600 / 60).toFixed(0)} minutes` : 
+                    "--"
+                }</p>
+                <p>Estimated price: {estimateData.price || "--"} Euros</p>
+            </div>
+        )}
+
 
     </div>
   );
