@@ -33,6 +33,12 @@ const AudioRecorder = () => {
     }
 
     const handleStringNumberOfPeople = (numberOfPeople) => {
+        // convert the string to lowercase
+        numberOfPeople = numberOfPeople.toLowerCase();
+
+        // strip the string of extra spaces
+        numberOfPeople = numberOfPeople.trim();
+
         // check if the string contains a number
         if (/\d/.test(numberOfPeople)) {
             // if it contains a number, return the number
@@ -83,52 +89,57 @@ const AudioRecorder = () => {
                 setStartDest(startDest);
                 setEndDest(endDest);
                 setNumberOfPeople(numberOfPeople);
-
-                // Fetch data for startDest
-                fetch('https://dev.api.mooovex.com/hackathon/autocomplete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: startDest,
-                        language: 'en'
-                    })
-                })
-                .then(response => response.json())
-                .then(startData => {
-                    // Update state with the response data for start destination
-                    console.log(startData);
-                    setStartDestData(startData);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-
-                // Fetch data for endDest
-                fetch('https://dev.api.mooovex.com/hackathon/autocomplete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: endDest,
-                        language: 'en'
-                    })
-                })
-                .then(response => response.json())
-                .then(endData => {
-                    // Update state with the response data for end destination
-                    setEndDestData(endData);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
             }
-
         }
-    }
-    , [newTranscription]);
+    }, [newTranscription]);
+
+    useEffect(() => {
+        if (startDest) {
+            fetch('https://dev.api.mooovex.com/hackathon/autocomplete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: startDest,
+                    language: 'en'
+                })
+            })
+            .then(response => response.json())
+            .then(startData => {
+                // Update state with the response data for start destination
+                console.log(startData);
+                setStartDestData(startData);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }, [startDest]);
+
+    useEffect(() => {
+        if (endDest) {
+            fetch('https://dev.api.mooovex.com/hackathon/autocomplete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: endDest,
+                    language: 'en'
+                })
+            })
+            .then(response => response.json())
+            .then(endData => {
+                // Update state with the response data for end destination
+                console.log(endData);
+                setEndDestData(endData);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }, [endDest]);
 
 
 
@@ -238,8 +249,8 @@ const AudioRecorder = () => {
             borderRadius: "5px",
         }}>
             <h2>New Transcription has been found! </h2>
-            <p>Recognized Start Destination field: {startDest}</p>
-            <p>Recognized End Destination field: {endDest}</p>
+            <p>Recognized Start Destination field: {startDest} {startDestData.google_place_id}</p>
+            <p>Recognized End Destination field: {endDest} {endDestData.google_place_id}</p>
             <p>Recognized Number of People field: {numberOfPeople}</p>
         </div>
       )}
